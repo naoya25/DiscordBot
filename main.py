@@ -5,7 +5,7 @@ load_dotenv()
 
 class MyClient(discord.Client):
     async def on_ready(self):
-        print(f'ログインしました: {self.user}!')
+        print(f'ログインしました: {self.user}')
 
     async def on_message(self, message):
         print(f'送信: {message.author}: {message.content}')
