@@ -1,7 +1,7 @@
 from transformers import pipeline
 import sqlite3
 
-def record_text_sentiment(guildid, channelid, userid, body):
+def record_text_sentiment(guildid, channelid, userid, body, created_at):
     nlp = pipeline(
         model="lxyuan/distilbert-base-multilingual-cased-sentiments-student",
         return_all_scores=True
@@ -22,15 +22,15 @@ def record_text_sentiment(guildid, channelid, userid, body):
                 positive REAL,
                 neutral REAL,
                 negative REAL,
-                created_at_UK TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP
             )
             """)
 
             insert_query = """
-            INSERT INTO Post (guildid, channelid, userid, body, positive, neutral, negative)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO Post (guildid, channelid, userid, body, created_at, positive, neutral, negative)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """
-            cursor.execute(insert_query, [guildid, channelid, userid, body] + negaposi_list)
+            cursor.execute(insert_query, [guildid, channelid, userid, body, created_at] + negaposi_list)
     except sqlite3.Error as e:
         print('DBのエラー: ', e)
 
