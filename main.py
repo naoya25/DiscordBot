@@ -1,11 +1,26 @@
 import discord
 import os
+import asyncio
+import datetime
 from keep import keep_alive
 from model import record_text_sentiment
+from dotenv import load_dotenv
+load_dotenv()
 
 class MyClient(discord.Client):
+    async def send_ranking(self):
+        await self.wait_until_ready()
+        while not self.is_closed():
+            now = datetime.datetime.now()
+            print(now)
+            if now.weekday() == 6 and now.hour == 12:
+                channel = self.get_channel(int(os.getenv('CHANNELID')))
+                await channel.send('日曜日だよ〜')
+            await asyncio.sleep(60*60)
+
     async def on_ready(self):
         print(f'ログインしました: {self.user}')
+        self.loop.create_task(self.send_ranking())
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -28,6 +43,5 @@ client = MyClient(intents=intents)
 # except:
 #     os.system("kill")
 
-from dotenv import load_dotenv
-load_dotenv()
+
 client.run(os.getenv('TOKEN'))
