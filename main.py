@@ -1,8 +1,9 @@
 import discord
 import os
 from dotenv import load_dotenv
-load_dotenv()
 from model import record_text_sentiment
+
+load_dotenv()
 
 class MyClient(discord.Client):
     async def on_ready(self):
