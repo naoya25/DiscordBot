@@ -2,18 +2,16 @@ import discord
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from model import record_text_sentiment
 
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f'ログインしました: {self.user}')
 
     async def on_message(self, message):
-        print(f'送信: {message.author}: {message.content}')
         if message.author == self.user:
             return
-
-        if message.content == '$Hello':
-            await message.channel.send('Hello!')
+        record_text_sentiment(message.guild.id, message.channel.id, message.author.id, message.content)
 
 intents = discord.Intents.default()
 intents.message_content = True
