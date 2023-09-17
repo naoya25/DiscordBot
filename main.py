@@ -73,7 +73,7 @@ async def negative(interaction: discord.Interaction, user: discord.Member):
 @tree.command(name='download_sentiment',description='このサーバー全てのネガポジをダウンロードします！')
 async def download_csv(interaction: discord.Interaction):
     await interaction.response.defer()
-    text = f'完了\nhttps://discordbot--onaoya2002.repl.co/download_csv?guildid={interaction.guild.id}'
+    text = f'以下のリンクからダウンロードしてね！\nhttps://discordbot--onaoya2002.repl.co/download_csv?guildid={interaction.guild.id}'
     await interaction.followup.send(text, ephemeral=False)
 
 keep_alive()
