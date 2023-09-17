@@ -56,22 +56,25 @@ tree = discord.app_commands.CommandTree(client)
 
 @tree.command(name='positive',description='userのpositive数値を返します！')
 async def positive(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
     userposts = getRecentData(interaction.guild.id, userid=user.id)
     posiscore = sum([i[5] for i in userposts]) / len(userposts)
     text = f'{user.display_name}のpositive度合いは: {round(posiscore*100, 1)}%です！'
-    await interaction.response.send_message(text, ephemeral=False)
+    await interaction.followup.send(text, ephemeral=False)
 
 @tree.command(name='negative',description='userのnegative数値を返します！')
 async def negative(interaction: discord.Interaction, user: discord.Member):
+    await interaction.response.defer()
     userposts = getRecentData(interaction.guild.id, userid=user.id)
     negascore = sum([i[7] for i in userposts]) / len(userposts)
     text = f'{user.display_name}のnegative度合いは: {round(negascore*100, 1)}%です！'
-    await interaction.response.send_message(text, ephemeral=False)
+    await interaction.followup.send(text, ephemeral=False)
 
 @tree.command(name='download_sentiment',description='このサーバー全てのネガポジをダウンロードします！')
 async def download_csv(interaction: discord.Interaction):
+    await interaction.response.defer()
     text = f'完了\nhttps://discordbot--onaoya2002.repl.co/download_csv?guildid={interaction.guild.id}'
-    await interaction.response.send_message(text, ephemeral=False)
+    await interaction.followup.send(text, ephemeral=False)
 
 keep_alive()
 try:
