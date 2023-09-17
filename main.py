@@ -2,7 +2,9 @@ import discord
 import os
 import asyncio
 from datetime import datetime, timedelta
-from keep import keep_alive
+import sqlite3
+import json
+import keep
 from model import record_text_sentiment
 from get_ranking import getRecentData, calculateUserSentiment
 from dotenv import load_dotenv
@@ -19,12 +21,12 @@ class MyClient(discord.Client):
                 positive_ranking, negative_ranking = calculateUserSentiment(posts)
                 text = '今週のモチベランキング\npositive\n'
                 text += '\n'.join([
-                    f'> {i}. {self.get_user(p[0])}'
+                    f'> {i}. {await self.fetch_user(p[0])}'
                     for i, p in enumerate(positive_ranking)
                 ])
                 text += '\nnegative\n'
                 text += '\n'.join([
-                    f'> {i}. {self.get_user(n[0])}'
+                    f'> {i}. {await self.fetch_user(n[0])}'
                     for i, n in enumerate(negative_ranking)
                 ])
                 await channel.send(text)
@@ -34,12 +36,12 @@ class MyClient(discord.Client):
                 positive_ranking, negative_ranking = calculateUserSentiment(posts)
                 text = '今月のモチベランキング\npositive\n'
                 text += '\n'.join([
-                    f'> {i}. {self.get_user(p[0])}'
+                    f'> {i}. {await self.fetch_user(p[0])}'
                     for i, p in enumerate(positive_ranking)
                 ])
                 text += '\nnegative\n'
                 text += '\n'.join([
-                    f'> {i}. {self.get_user(n[0])}'
+                    f'> {i}. {await self.fetch_user(n[0])}'
                     for i, n in enumerate(negative_ranking)
                 ])
                 await channel.send(text)
@@ -69,6 +71,7 @@ class MyClient(discord.Client):
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 client = MyClient(intents=intents)
 tree = discord.app_commands.CommandTree(client)
 
@@ -108,7 +111,26 @@ async def download_csv(interaction: discord.Interaction):
         text = 'このコマンドは管理者権限を持っているユーザーのみが使えます'
         await interaction.response.send_message(text, ephemeral=True)
 
-keep_alive()
+app = keep.app
+auth = keep.auth
+
+@app.route('/get_posts')
+@auth.login_required
+def get_posts():
+    with sqlite3.connect('discord_db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Post')
+        posts = cursor.fetchall()
+    return_list = [['id', 'guildid', 'guildname', 'channelid', 'channelname', 'userid', 'username', 'body', 'positive', 'neutral', 'negative', 'created_at']]
+    for p in posts:
+        guildname = str(client.get_guild(p[1]))
+        channelname = str(client.get_channel(p[2]))
+        username = str(client.get_user(p[3]))
+        arr = list(p[:2]) + [guildname, p[2], channelname, p[3], username] + list(p[4:])
+        return_list.append(arr)
+    return json.dumps(return_list)
+
+keep.keep_alive()
 try:
     client.run(os.getenv('TOKEN'))
 except:

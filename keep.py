@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
 from flask_httpauth import HTTPBasicAuth
 from threading import Thread
 import os
@@ -16,7 +16,7 @@ def verify_password(username, password):
 
 @app.route('/')
 def main():
-    return "Bot is alive"
+    return render_template('/index.html')
 
 @app.route('/download_csv')
 @auth.login_required
