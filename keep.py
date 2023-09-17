@@ -2,6 +2,8 @@ from flask import Flask, request, Response, render_template
 from flask_httpauth import HTTPBasicAuth
 from threading import Thread
 import os
+import requests
+from bs4 import BeautifulSoup
 from get_ranking import getRecentData
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,7 +18,12 @@ def verify_password(username, password):
 
 @app.route('/')
 def main():
-    return render_template('/index.html')
+    response = requests.get('https://forms.gle/HB5CUr9ZZJ2cwWmq7')
+    html_content = response.text
+    soup = BeautifulSoup(html_content, 'html.parser')
+    ogp_tags = soup.find_all('meta', attrs={'property': 'og:image'})
+    ogp_image_url = ogp_tags[0]['content'] if ogp_tags else 'aaa'
+    return render_template('/index.html', image=ogp_image_url)
 
 @app.route('/download_csv')
 @auth.login_required
