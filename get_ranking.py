@@ -7,7 +7,6 @@ def getRecentData(guildid, pastDays=-1, userid=0):
 
     with sqlite3.connect('discord_db') as connection:
         cursor = connection.cursor()
-
         if pastDays == -1 and userid == 0:
             query = "SELECT * FROM Post WHERE guildid = ?"
             cursor.execute(query, (guildid, ))
@@ -25,11 +24,9 @@ def getRecentData(guildid, pastDays=-1, userid=0):
 
 def calculateUserSentiment(posts):
     user_sentiment = {}
-
     for post in posts:
         userid = post[3]
         sentiment = np.array(post[5:8])
-
         if userid in user_sentiment:
             user_sentiment[userid].append(sentiment)
         else:
