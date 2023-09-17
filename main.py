@@ -55,25 +55,27 @@ client = MyClient(intents=intents)
 tree = discord.app_commands.CommandTree(client)
 
 @tree.command(name='positive',description='userのpositive数値を返します！')
-async def test_command(interaction: discord.Interaction, user: discord.Member):
+async def positive(interaction: discord.Interaction, user: discord.Member):
     userposts = getRecentData(interaction.guild.id, userid=user.id)
     posiscore = sum([i[5] for i in userposts]) / len(userposts)
     text = f'{user.display_name}のpositive度合いは: {round(posiscore*100, 1)}%です！'
     await interaction.response.send_message(text, ephemeral=False)
 
 @tree.command(name='negative',description='userのnegative数値を返します！')
-async def test_command(interaction: discord.Interaction, user: discord.Member):
+async def negative(interaction: discord.Interaction, user: discord.Member):
     userposts = getRecentData(interaction.guild.id, userid=user.id)
     negascore = sum([i[7] for i in userposts]) / len(userposts)
     text = f'{user.display_name}のnegative度合いは: {round(negascore*100, 1)}%です！'
     await interaction.response.send_message(text, ephemeral=False)
 
+@tree.command(name='download_sentiment',description='このサーバー全てのネガポジをダウンロードします！')
+async def download_csv(interaction: discord.Interaction):
+    text = f'完了\nhttps://discordbot--onaoya2002.repl.co/download_csv?guildid={interaction.guild.id}'
+    await interaction.response.send_message(text, ephemeral=False)
 
-# keep_alive()
-# try:
-#     client.run(os.environ['TOKEN'])
-# except:
-#     os.system("kill")
-
-
-client.run(os.getenv('TOKEN'))
+keep_alive()
+try:
+    # client.run(os.environ['TOKEN'])
+    client.run(os.getenv('TOKEN'))
+except:
+    os.system("kill")
