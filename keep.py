@@ -1,6 +1,5 @@
 from flask import Flask, request, Response
 from threading import Thread
-import csv
 from get_ranking import getRecentData
 
 app = Flask('')
